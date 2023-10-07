@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="remoteAccessConsumerKey">3MVG9OGq41FnYVsFYQAOOLfb3xfCb.Q3vwX74xdzwAGJtDGhHeg.VxU7L.N2g8cKqoqwczXxK8smmFMeaV_0r</string>
+    <string name="oauthRedirectURI">sfdc:///spulse.callback</string>
+    <string-array name="oauthScopes">
+        <item>api</item>
+        <item>web</item>
+    </string-array>
+    <string name="androidPushNotificationClientId" />
+</resources>
