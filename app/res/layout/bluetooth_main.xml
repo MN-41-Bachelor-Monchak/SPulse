@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground"
+    android:id="@+id/bluetooth_main"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/bluetooth_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text=""
+        android:textAlignment="center"
+        android:textColor="#000"
+        android:textSize="20sp" />
+
+    <!--  Bluetooth Image  -->
+    <ImageView
+        android:id="@+id/bluetooth_img"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/ic_bluetooth_off"
+         />
+
+    <!--  Turn on Bluetooth  -->
+    <Button
+        android:id="@+id/bluetooth_btnTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:text="Turn On"
+        android:textAlignment="center"
+        android:minWidth="150dp"
+        android:layout_marginTop="15dp" />
+
+    <!--  Turn Off Bluetooth  -->
+<!--    <Button-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        style="@style/Widget.AppCompat.Button.Colored"-->
+<!--        android:background="#125"-->
+<!--        android:text="Turn Off"-->
+<!--        android:textAlignment="center"-->
+<!--        android:minWidth="150dp"-->
+<!--         />-->
+    <ListView
+        android:id="@+id/bluetooth_con_devices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+</LinearLayout>
