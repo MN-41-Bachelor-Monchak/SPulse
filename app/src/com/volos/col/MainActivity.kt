@@ -26,23 +26,17 @@
  */
 package com.volos.col
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.ListView
-import android.widget.Toast
 import com.salesforce.androidsdk.app.SalesforceSDKManager
 import com.salesforce.androidsdk.mobilesync.app.MobileSyncSDKManager
-import com.salesforce.androidsdk.rest.ApiVersionStrings
 import com.salesforce.androidsdk.rest.RestClient
-import com.salesforce.androidsdk.rest.RestClient.AsyncRequestCallback
-import com.salesforce.androidsdk.rest.RestRequest
-import com.salesforce.androidsdk.rest.RestResponse
 import com.salesforce.androidsdk.ui.SalesforceActivity
-import java.io.UnsupportedEncodingException
 import java.util.*
+
 
 /**
  * Main activity
@@ -89,5 +83,10 @@ class MainActivity : SalesforceActivity() {
      */
     fun onLogoutClick(v: View) {
         SalesforceSDKManager.getInstance().logout(this)
+    }
+
+    fun runBluetoothActivity(view: View) {
+        val intent = Intent(this, BluetoothActivity::class.java)
+        startActivity(intent)
     }
 }

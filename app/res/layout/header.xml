@@ -34,6 +34,7 @@
 		android:layout_alignParentEnd="true"
 		android:layout_centerVertical="true"
 		android:layout_marginEnd="130dp"
+		android:onClick="runBluetoothActivity"
 		android:background="@drawable/round_corners_shape"
 		app:srcCompat="@android:drawable/stat_sys_data_bluetooth" />
 </RelativeLayout>
