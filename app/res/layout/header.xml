@@ -12,17 +12,16 @@
 		android:layout_alignParentStart="true"
 		android:layout_centerVertical="true"
 		android:layout_marginStart="8dp"
-		android:layout_marginLeft="3dp"
 		android:text="@string/app_name"
 		android:textColor="?attr/sfColorSecondary" />
 
 	<Button
 		android:id="@+id/logout_button"
-		android:layout_width="128dp"
-		android:layout_height="45dp"
+		android:layout_width="85dp"
+		android:layout_height="35dp"
 		android:layout_alignParentRight="true"
 		android:layout_centerVertical="true"
-		android:background="@android:color/transparent"
+		android:background="@drawable/round_corners_shape"
 		android:onClick="onLogoutClick"
 		android:text="@string/logout_button"
 		android:textColor="?attr/sfColorSecondary" />
@@ -33,8 +32,8 @@
 		android:layout_height="30dp"
 		android:layout_alignParentEnd="true"
 		android:layout_centerVertical="true"
-		android:layout_marginEnd="130dp"
+		android:layout_marginEnd="90dp"
 		android:onClick="runBluetoothActivity"
 		android:background="@drawable/round_corners_shape"
-		app:srcCompat="@android:drawable/stat_sys_data_bluetooth" />
+		app:srcCompat="@drawable/ic_bluetooth_on" />
 </RelativeLayout>
