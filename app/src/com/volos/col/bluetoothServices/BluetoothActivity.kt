@@ -1,4 +1,4 @@
-package com.volos.col.bluetoothService
+package com.volos.col.bluetoothServices
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -7,13 +7,16 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothSocket
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.provider.Settings
 import android.util.Log
 import android.view.View
@@ -28,10 +31,11 @@ import com.volos.col.R
 import java.io.IOException
 import java.util.UUID
 
+val UUID_BT: UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
 class BluetoothActivity: AppCompatActivity() {
     //    Constants:
-    private val UUID_BT: UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
     private val toastLength: Int = 5
+    private var isBound = false
     // End.
 
     private lateinit var bluetoothAdapter: BluetoothAdapter
@@ -92,8 +96,8 @@ class BluetoothActivity: AppCompatActivity() {
 
         if(bluetoothAdapter.bondedDevices.size != 0) {
             bluetoothAdapter.bondedDevices.forEach {
-                deviceMap["Name: " + it.name + "\n MAC: " + it.address] = it.address
-                connectedBTDeviceNames.add("Name: " + it.name + "\n MAC: " + it.address)
+                deviceMap[deviceName(it.name, it.address)] = it.address
+                connectedBTDeviceNames.add(deviceName(it.name, it.address))
                 connectedBTDevicesAdapter!!.notifyDataSetChanged()
             }
         }
@@ -116,6 +120,13 @@ class BluetoothActivity: AppCompatActivity() {
                 }
             }
         }
+        connectedDevices.setOnItemClickListener { _, _, pos, _ ->
+            deviceMap[connectedBTDeviceNames[pos]]?.let { Log.d("jerkAddress: ", it) }
+        }
+    }
+
+    private fun deviceName(name: String, address: String): String {
+        return "Name: $name\n MAC: $address"
     }
 
     private val bluetoothReceiver = object : BroadcastReceiver() {
@@ -130,9 +141,9 @@ class BluetoothActivity: AppCompatActivity() {
 
                     val deviceName = device.name // Name
                     val deviceHardwareAddress = device.address // MAC address
-                    if (deviceName != null && deviceHardwareAddress != null && !connectedBTDeviceNames.contains(deviceName)) {
-                        deviceMap["Name: $deviceName\n MAC: $deviceHardwareAddress"] = deviceHardwareAddress
-                        availableBTDeviceNames.add("Name: $deviceName\n MAC: $deviceHardwareAddress")
+                    if (deviceName != null && deviceHardwareAddress != null && !connectedBTDeviceNames.contains(deviceName(deviceName, deviceHardwareAddress))) {
+                        deviceMap[deviceName(deviceName, deviceHardwareAddress)] = deviceHardwareAddress
+                        availableBTDeviceNames.add(deviceName(deviceName, deviceHardwareAddress))
                     }
                     availableBTDevicesAdapter?.notifyDataSetChanged()
                 }
@@ -143,7 +154,6 @@ class BluetoothActivity: AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         // Close the Bluetooth socket if connected
-        bluetoothSocket?.close()
         // Unregister the broadcast receiver
         unregisterReceiver(bluetoothReceiver)
     }
@@ -156,7 +166,7 @@ class BluetoothActivity: AppCompatActivity() {
     }
 
     fun onBackClick(v: View) {
-        setContentView(R.layout.main)
+        super.onBackPressed()
     }
 
     @SuppressLint("MissingPermission")
@@ -179,13 +189,17 @@ class BluetoothActivity: AppCompatActivity() {
                 // until it succeeds or throws an exception.
                 socket.connect()
                 bluetoothSocket = socket
+                BTSocket = socket
+
+                val serviceIntent = Intent(context, BluetoothService::class.java)
+                startService(serviceIntent)
 
                 Toast.makeText(context, "Successfully Connected to $deviceName!", toastLength).show()
 
-                connectedBTDeviceNames.add("Name: $deviceName \n MAC: $macAddress")
+                connectedBTDeviceNames.add(deviceName(deviceName, macAddress))
                 connectedBTDevicesAdapter!!.notifyDataSetChanged()
 
-                availableBTDeviceNames.remove("Name: $deviceName MAC: $macAddress")
+                availableBTDeviceNames.remove(deviceName(deviceName, macAddress))
                 availableBTDevicesAdapter?.notifyDataSetChanged()
             }
         }
@@ -198,5 +212,10 @@ class BluetoothActivity: AppCompatActivity() {
                 Log.e("jerk IOException", "Could not close the client socket", e)
             }
         }
+    }
+
+    companion object {
+        val UUID_MY: UUID = UUID_BT
+        var BTSocket: BluetoothSocket? = null
     }
 }

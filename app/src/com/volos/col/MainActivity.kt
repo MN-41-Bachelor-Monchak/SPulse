@@ -26,15 +26,21 @@
  */
 package com.volos.col
 
+import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.salesforce.androidsdk.app.SalesforceSDKManager
 import com.salesforce.androidsdk.mobilesync.app.MobileSyncSDKManager
 import com.salesforce.androidsdk.rest.RestClient
 import com.salesforce.androidsdk.ui.SalesforceActivity
-import com.volos.col.bluetoothService.BluetoothActivity
+import com.volos.col.bluetoothServices.BluetoothActivity
 
 
 /**
@@ -44,6 +50,7 @@ class MainActivity : SalesforceActivity() {
 
     private var client: RestClient? = null
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // To remove additional header
@@ -55,6 +62,9 @@ class MainActivity : SalesforceActivity() {
         MobileSyncSDKManager.getInstance().setViewNavigationVisibility(this)
 
 //        Log.d("jerk", "hello"); //(debug)
+        // Register the BroadcastReceiver
+        val filter = IntentFilter("com.volos.col.DATA_RECEIVED")
+        registerReceiver(dataReceiver, filter)
 
         // Setup view
         setContentView(R.layout.main)
@@ -75,6 +85,33 @@ class MainActivity : SalesforceActivity() {
         findViewById<ViewGroup>(R.id.root).visibility = View.VISIBLE
     }
 
+    private val dataReceiver = object : BroadcastReceiver() {
+        @SuppressLint("SetTextI18n")
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val receivedData = intent?.getStringExtra("DATA")
+            // Handle the received data here
+            receivedData?.let {
+                val splitted: List<String> = it.split("//")
+                val SpO2: TextView = findViewById<TextView>(R.id.spo2)
+                val Temp: TextView = findViewById<TextView>(R.id.temperature)
+                val BPM: TextView = findViewById<TextView>(R.id.bpm)
+                SpO2.text = "SpO2: " + splitted[0]
+                Temp.text = "Temperature: " + splitted[1]
+                BPM.text = "BPM: " + splitted[2]
+            }
+        }
+    }
+
+
+    @SuppressLint("SetTextI18n")
+    fun refreshData(v: View) {
+        val SpO2: TextView = findViewById<TextView>(R.id.spo2)
+        val Temp: TextView = findViewById<TextView>(R.id.temperature)
+        val BPM: TextView = findViewById<TextView>(R.id.bpm)
+        SpO2.text = "SpO2: No Data"
+        Temp.text = "Temperature: No Data"
+        BPM.text = "BPM: No Data"
+    }
     /**
      * Called when "Logout" button is clicked.
 
