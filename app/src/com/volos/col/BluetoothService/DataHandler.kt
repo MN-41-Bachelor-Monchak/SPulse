@@ -1,11 +1,9 @@
-package com.volos.col
+package com.volos.col.BluetoothService
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
 
 class DataHandler (var context: Context) {
     private val socket = BluetoothActivity.BLUETOOTH_SOCKET
@@ -47,5 +45,6 @@ class DataHandler (var context: Context) {
 
     private fun processReceivedData(data: String) {
         println("Received data: $data")
+        Log.d("jerkData12", data)
     }
 }

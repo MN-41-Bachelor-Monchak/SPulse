@@ -1,4 +1,4 @@
-package com.volos.col
+package com.volos.col.BluetoothService
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -25,9 +25,9 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.volos.col.R
 import java.io.IOException
 import java.util.UUID
-
 
 class BluetoothActivity: AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.S)
@@ -66,12 +66,20 @@ class BluetoothActivity: AppCompatActivity() {
 
         availableDevicesToConnect = findViewById<ListView>(R.id.select_device_list)
         connectedDevices = findViewById<ListView>(R.id.connected_devices_list)
-        var refreshButton = findViewById<Button>(R.id.select_device_refresh)
+        val refreshButton = findViewById<Button>(R.id.select_device_refresh)
 
         bluetoothManager = getSystemService(BluetoothManager::class.java)
         bluetoothAdapter = bluetoothManager.adapter
-        devicesToConnectListViewAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, devicesNamesToConnectArray)
-        connectedDevicesListViewAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, connectedDevicesNamesArray)
+        devicesToConnectListViewAdapter = ArrayAdapter<String>(
+            this,
+            android.R.layout.simple_list_item_1,
+            devicesNamesToConnectArray
+        )
+        connectedDevicesListViewAdapter = ArrayAdapter<String>(
+            this,
+            android.R.layout.simple_list_item_1,
+            connectedDevicesNamesArray
+        )
         availableDevicesToConnect.adapter = devicesToConnectListViewAdapter
         connectedDevices.adapter = connectedDevicesListViewAdapter
 
@@ -139,8 +147,8 @@ class BluetoothActivity: AppCompatActivity() {
 
                     deviceList.add(device)
 
-                    val deviceName = device?.name // Name
-                    val deviceHardwareAddress = device?.address // MAC address
+                    val deviceName = device.name // Name
+                    val deviceHardwareAddress = device.address // MAC address
                     if (deviceName != null && deviceHardwareAddress != null && !connectedDevicesNamesArray.contains(deviceName)) {
                         deviceMap.put(deviceName, deviceHardwareAddress)
                         devicesNamesToConnectArray.add(deviceName)
@@ -173,7 +181,10 @@ class BluetoothActivity: AppCompatActivity() {
     }
 
     private fun hasPermission(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     fun onBackClick(v: View) {
@@ -228,8 +239,4 @@ class BluetoothActivity: AppCompatActivity() {
     companion object {
         lateinit var BLUETOOTH_SOCKET: BluetoothSocket
     }
-}
-
-private operator fun <K, V> HashMap<K, V>.set(deviceName: V?, value: V?) {
-
 }

@@ -35,7 +35,8 @@ import com.salesforce.androidsdk.app.SalesforceSDKManager
 import com.salesforce.androidsdk.mobilesync.app.MobileSyncSDKManager
 import com.salesforce.androidsdk.rest.RestClient
 import com.salesforce.androidsdk.ui.SalesforceActivity
-import java.util.*
+import com.volos.col.BluetoothService.BluetoothActivity
+import com.volos.col.BluetoothService.DataHandler
 
 
 /**
@@ -55,7 +56,7 @@ class MainActivity : SalesforceActivity() {
         setTheme(if (idDarkTheme) R.style.SalesforceSDK_Dark else R.style.SalesforceSDK)
         MobileSyncSDKManager.getInstance().setViewNavigationVisibility(this)
 
-        Log.d("hello", "hello"); //(debug)
+//        Log.d("jerk", "hello"); //(debug)
 
         // Setup view
         setContentView(R.layout.main)
