@@ -7,4 +7,5 @@
 	<string name="logout_button">Logout</string>
 	<string name="logout_btn_width">85dp</string>
 	<string name="logout_btn_height">35dp</string>
+	<string name="Refresh_BT">Refresh</string>
 </resources>

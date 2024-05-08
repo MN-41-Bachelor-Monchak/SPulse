@@ -32,7 +32,7 @@
 		android:layout_height="30dp"
 		android:layout_alignParentEnd="true"
 		android:layout_centerVertical="true"
-		android:layout_marginEnd="90dp"
+		android:layout_marginEnd="110dp"
 		android:onClick="runBluetoothActivity"
 		android:background="@drawable/round_corners_shape"
 		app:srcCompat="@drawable/ic_bluetooth_on" />
