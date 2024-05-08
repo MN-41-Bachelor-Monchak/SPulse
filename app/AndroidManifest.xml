@@ -32,7 +32,7 @@
 			</intent-filter>
 		</activity>
 
-		<activity android:name=".BluetoothService.BluetoothActivity"
+		<activity android:name=".bluetoothService.BluetoothActivity"
 			android:theme="@style/SalesforceSDK_Fullscreen"
 			android:exported="true">
 		</activity>
