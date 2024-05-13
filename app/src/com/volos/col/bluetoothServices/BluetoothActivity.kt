@@ -121,7 +121,7 @@ class BluetoothActivity: AppCompatActivity() {
             }
         }
         connectedDevices.setOnItemClickListener { _, _, pos, _ ->
-            deviceMap[connectedBTDeviceNames[pos]]?.let { Log.d("jerkAddress: ", it) }
+            deviceMap[connectedBTDeviceNames[pos]]?.let { Log.d("CONSOLE Address: ", it) }
         }
     }
 
@@ -209,7 +209,7 @@ class BluetoothActivity: AppCompatActivity() {
             try {
                 mmSocket?.close()
             } catch (e: IOException) {
-                Log.e("jerk IOException", "Could not close the client socket", e)
+                Log.e("CONSOLE IOException", "Could not close the client socket", e)
             }
         }
     }
