@@ -26,23 +26,35 @@
  */
 package com.volos.col
 
+import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.browser.trusted.sharing.ShareTarget.METHOD_GET
+import androidx.browser.trusted.sharing.ShareTarget.RequestMethod
 import com.salesforce.androidsdk.app.SalesforceSDKManager
 import com.salesforce.androidsdk.mobilesync.app.MobileSyncSDKManager
-import com.salesforce.androidsdk.rest.ApiVersionStrings
 import com.salesforce.androidsdk.rest.RestClient
-import com.salesforce.androidsdk.rest.RestClient.AsyncRequestCallback
 import com.salesforce.androidsdk.rest.RestRequest
 import com.salesforce.androidsdk.rest.RestResponse
 import com.salesforce.androidsdk.ui.SalesforceActivity
-import java.io.UnsupportedEncodingException
-import java.util.*
+import com.volos.col.bluetoothServices.BluetoothActivity
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 
 /**
  * Main activity
@@ -51,6 +63,7 @@ class MainActivity : SalesforceActivity() {
 
     private var client: RestClient? = null
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // To remove additional header
@@ -61,7 +74,9 @@ class MainActivity : SalesforceActivity() {
         setTheme(if (idDarkTheme) R.style.SalesforceSDK_Dark else R.style.SalesforceSDK)
         MobileSyncSDKManager.getInstance().setViewNavigationVisibility(this)
 
-        Log.d("hello", "hello"); //(debug)
+        // Register the BroadcastReceiver
+        val filter = IntentFilter("com.volos.col.DATA_RECEIVED")
+        registerReceiver(dataReceiver, filter)
 
         // Setup view
         setContentView(R.layout.main)
@@ -82,6 +97,78 @@ class MainActivity : SalesforceActivity() {
         findViewById<ViewGroup>(R.id.root).visibility = View.VISIBLE
     }
 
+    private val dataReceiver = object : BroadcastReceiver() {
+        @RequiresApi(Build.VERSION_CODES.O)
+        @SuppressLint("SetTextI18n")
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val receivedData = intent?.getStringExtra("DATA")
+            // Handle the received data here
+            receivedData?.let {
+                val splitted: List<String> = it.split("//")
+                val SpO2: TextView = findViewById<TextView>(R.id.spo2)
+                val Temp: TextView = findViewById<TextView>(R.id.temperature)
+                val BPM: TextView = findViewById<TextView>(R.id.bpm)
+                SpO2.text = "SpO2: " + splitted[0] + "%"
+                Temp.text = "Температура: " + splitted[1] + "C*"
+                BPM.text = "BPM: " + splitted[2]
+
+                sendToSalesforce(splitted[0], splitted[1], splitted[2])
+            }
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    fun refreshData(v: View) {
+        val SpO2: TextView = findViewById<TextView>(R.id.spo2)
+        val Temp: TextView = findViewById<TextView>(R.id.temperature)
+        val BPM: TextView = findViewById<TextView>(R.id.bpm)
+        SpO2.text = "SpO2: No Data"
+        Temp.text = "Temperature: No Data"
+        BPM.text = "BPM: No Data"
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun sendToSalesforce(SpO2: String, bodyTemp: String, BPM: String) {
+        try {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            val currentTime = LocalDateTime.now().format(formatter).toString()
+            val formattedTime = currentTime.split(" ")[0] + "T" + currentTime.split(" ")[1] + ".100+0000"
+
+            val jsonObject = JSONObject()
+            jsonObject.put("Body_Temperature__c", bodyTemp)
+            jsonObject.put("Date_Time_Recorded__c", formattedTime)
+            jsonObject.put("Heart_Beats_Minute__c", BPM)
+            jsonObject.put("SpO2__c", SpO2)
+            jsonObject.put("userId", client?.clientInfo?.userId)
+            val body = jsonObject.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+
+            val req: RestRequest = RestRequest(RestRequest.RestMethod.POST, "https://spulse-dev-ed.develop.my.salesforce.com/services/apexrest/SPulse", body)
+
+            client?.sendAsync(req, object : RestClient.AsyncRequestCallback {
+                override fun onSuccess(request: RestRequest, result: RestResponse) {
+                    result.consumeQuietly()
+                    runOnUiThread {
+                        try {
+                            //Log.d("CONSOLE Request: ", request.toString())
+                            Log.d("CONSOLE Response: ", result.toString())
+                        } catch (e: Exception) {
+                            Log.d("CONSOLE Exception: ", e.toString() + "\n" + e.message.toString())
+                        }
+                    }
+                }
+
+                override fun onError(exception: Exception) {
+                    runOnUiThread {
+                        Toast.makeText(this@MainActivity,
+                            this@MainActivity.getString(R.string.sf__generic_error, exception.toString()),
+                            Toast.LENGTH_LONG).show()
+                    }
+                }
+            })
+        } catch (e : Exception){
+            Log.d("CONSOLE Exception: ", e.toString() + "\n" + e.message.toString())
+        }
+    }
     /**
      * Called when "Logout" button is clicked.
 
@@ -89,5 +176,10 @@ class MainActivity : SalesforceActivity() {
      */
     fun onLogoutClick(v: View) {
         SalesforceSDKManager.getInstance().logout(this)
+    }
+
+    fun runBluetoothActivity(view: View) {
+        val intent = Intent(this, BluetoothActivity::class.java)
+        startActivity(intent)
     }
 }

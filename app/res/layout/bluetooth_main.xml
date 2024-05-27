@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bluetooth_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <include layout="@layout/empty_header" />
+
+    <TextView
+        android:id="@+id/connectedDevicesText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Connected Devices: " />
+
+    <ListView
+        android:id="@+id/connected_devices_list"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/availableDevicesText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Available Devices: " />
+
+    <ListView
+        android:id="@+id/select_device_list"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content" />
+</LinearLayout>
